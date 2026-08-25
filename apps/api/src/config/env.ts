@@ -12,7 +12,18 @@ const environmentSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   APP_URL: z.string().url().default('http://localhost:5173'),
   MAIL_MODE: z.enum(['console', 'smtp']).default('console'),
+  SMTP_HOST: z.string().min(1).optional(),
+  SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
+  SMTP_SECURE: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
+  SMTP_USER: z.string().min(1).optional(),
+  SMTP_PASSWORD: z.string().min(1).optional(),
+  SMTP_FROM: z.string().min(1).optional(),
   COLLEGE_EMAIL_DOMAIN: z.string().optional(),
+}).superRefine((value, context) => {
+  if (value.MAIL_MODE !== 'smtp') return;
+  for (const key of ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASSWORD', 'SMTP_FROM'] as const) {
+    if (!value[key]) context.addIssue({ code: z.ZodIssueCode.custom, path: [key], message: `${key} is required when MAIL_MODE=smtp.` });
+  }
 });
 
 export const env = environmentSchema.parse(process.env);

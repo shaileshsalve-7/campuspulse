@@ -90,6 +90,8 @@ The command makes that account a verified `SUPER_ADMIN` and is idempotent.
 
 With `MAIL_MODE=console`, verification and reset URLs are written to the API terminal. In non-production mode the frontend also offers a direct verification/reset link purely for local setup. Set `MAIL_MODE=smtp` only after supplying a real email transport implementation in `apps/api/src/services/email.service.ts`.
 
+For a deployed application, the SMTP transport is included. Set `MAIL_MODE=smtp` and provide `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, and `SMTP_FROM` in the host's protected environment-variable settings. Do not place those values in Git or the frontend bundle.
+
 ## Environment variables
 
 See [.env.example](.env.example). Important values:
@@ -102,6 +104,8 @@ See [.env.example](.env.example). Important values:
 | `CLIENT_ORIGIN` | Allowed browser origin |
 | `COLLEGE_EMAIL_DOMAIN` | Optional domain restriction, e.g. `college.edu` |
 | `MAIL_MODE` | `console` locally or `smtp` when a provider is configured |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE` | SMTP server connection settings for production email |
+| `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | SMTP credentials and verified sender address |
 | `SEED_ADMIN_EMAIL` | One-time super-admin bootstrap email |
 | `SEED_ADMIN_PASSWORD` | One-time super-admin bootstrap password |
 | `VITE_API_BASE_URL` | Public API URL for a hosted frontend; configured in `apps/web/.env` locally |
@@ -153,8 +157,8 @@ npm run test
 ## Deployment
 
 - [vercel.json](vercel.json) configures the Vite frontend build. In Vercel set `VITE_API_BASE_URL` to your deployed API URL.
-- [render.yaml](render.yaml) defines the API service. Supply `MONGODB_URI`, `CLIENT_ORIGIN`, and `APP_URL` through Render; do not commit them.
-- Use MongoDB Atlas in production, enable HTTPS, use unique JWT secrets, set the exact frontend `CLIENT_ORIGIN`, and replace the console email adapter with a real provider.
+- [render.yaml](render.yaml) defines the API service. Supply `MONGODB_URI`, `CLIENT_ORIGIN`, `APP_URL`, and SMTP settings through Render; do not commit them.
+- Use MongoDB Atlas in production, enable HTTPS, use unique JWT secrets, set the exact frontend `CLIENT_ORIGIN`, and configure a verified SMTP sender.
 
 ## Provider extensions
 

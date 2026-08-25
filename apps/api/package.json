@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.4",
     "multer": "^2.2.0",
+    "nodemailer": "^9.0.5",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -31,6 +32,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.2.0",
     "@types/node": "^24.1.0",
+    "@types/nodemailer": "^8.0.1",
     "@types/supertest": "^6.0.3",
     "supertest": "^7.1.1",
     "tsx": "^4.20.3",
