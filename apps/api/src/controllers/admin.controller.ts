@@ -45,14 +45,14 @@ export async function analytics(request: AuthenticatedRequest, response: Respons
 
 export async function manageUsers(request: AuthenticatedRequest, response: Response): Promise<Response> {
   if (!admins.has(request.auth!.role)) throw new ApiError(403, 'Administrator access is required.', 'INSUFFICIENT_ROLE');
-  const users = await User.find().select('firstName lastName email role isActive isEmailVerified createdAt').sort({ createdAt: -1 }).limit(200).lean();
+  const users = await User.find().select('firstName lastName email role isActive createdAt').sort({ createdAt: -1 }).limit(200).lean();
   return sendSuccess(response, 200, 'Users retrieved.', { users });
 }
 
 export async function updateUser(request: AuthenticatedRequest, response: Response): Promise<Response> {
   if (!admins.has(request.auth!.role)) throw new ApiError(403, 'Administrator access is required.', 'INSUFFICIENT_ROLE');
   if (request.params.id === request.auth!.userId && request.body.isActive === false) throw new ApiError(422, 'You cannot disable your own account.', 'SELF_DISABLE_FORBIDDEN');
-  const user = await User.findByIdAndUpdate(request.params.id, { $set: request.body }, { new: true }).select('firstName lastName email role isActive isEmailVerified');
+  const user = await User.findByIdAndUpdate(request.params.id, { $set: request.body }, { new: true }).select('firstName lastName email role isActive');
   if (!user) throw new ApiError(404, 'User not found.', 'USER_NOT_FOUND');
   return sendSuccess(response, 200, 'User updated.', { user });
 }

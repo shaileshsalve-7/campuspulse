@@ -3,13 +3,9 @@ import type { AuthPayload, User } from '../types';
 
 export const authApi = {
   async register(input: { firstName: string; lastName: string; email: string; password: string }) {
-    return apiRequest<{ user: User; developmentToken?: string }>('/api/auth/register', { method: 'POST', body: input });
-  },
-  async verifyEmail(token: string) {
-    return apiRequest<{ user: User }>('/api/auth/verify-email', { method: 'POST', body: { token } });
-  },
-  async resendVerification(email: string) {
-    return apiRequest<{ developmentToken?: string }>('/api/auth/resend-verification', { method: 'POST', body: { email } });
+    const response = await apiRequest<AuthPayload>('/api/auth/register', { method: 'POST', body: input });
+    setAccessToken(response.data!.accessToken);
+    return response.data!;
   },
   async login(input: { email: string; password: string }) {
     const response = await apiRequest<AuthPayload>('/api/auth/login', { method: 'POST', body: input });

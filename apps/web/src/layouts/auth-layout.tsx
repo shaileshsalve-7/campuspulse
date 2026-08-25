@@ -12,7 +12,7 @@ export function AuthLayout() {
           <h1 className="text-5xl font-semibold leading-[1.08] tracking-tight">Small reports. Visible change.</h1>
           <p className="mt-6 max-w-sm text-lg leading-8 text-slate-300">CampusPulse makes it simple to flag what matters, follow progress, and participate in campus life.</p>
           <div className="mt-10 space-y-4 text-sm text-slate-200">
-            {['College-email verification', 'Private and secure sessions', 'Role-aware campus workspace'].map((item) => <div key={item} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-blue-300" />{item}</div>)}
+            {['Instant account access', 'Private and secure sessions', 'Role-aware campus workspace'].map((item) => <div key={item} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-blue-300" />{item}</div>)}
           </div>
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-400"><ShieldCheck size={17} /> Built for trusted campus communities</div>

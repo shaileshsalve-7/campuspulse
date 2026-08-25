@@ -10,10 +10,7 @@ export interface IUser {
   passwordHash: string;
   role: UserRole;
   avatarUrl?: string;
-  isEmailVerified: boolean;
   isActive: boolean;
-  emailVerificationTokenHash?: string;
-  emailVerificationExpiresAt?: Date;
   passwordResetTokenHash?: string;
   passwordResetExpiresAt?: Date;
   createdAt: Date;
@@ -30,10 +27,7 @@ const userSchema = new Schema<IUser>(
     passwordHash: { type: String, required: true, select: false },
     role: { type: String, enum: USER_ROLES, default: 'STUDENT', index: true },
     avatarUrl: { type: String, trim: true },
-    isEmailVerified: { type: Boolean, default: false, index: true },
     isActive: { type: Boolean, default: true, index: true },
-    emailVerificationTokenHash: { type: String, select: false },
-    emailVerificationExpiresAt: { type: Date, select: false },
     passwordResetTokenHash: { type: String, select: false },
     passwordResetExpiresAt: { type: Date, select: false },
   },
@@ -52,7 +46,6 @@ export function publicUser(user: UserDocument) {
     email: user.email,
     role: user.role,
     avatarUrl: user.avatarUrl,
-    isEmailVerified: user.isEmailVerified,
     createdAt: user.createdAt,
   };
 }

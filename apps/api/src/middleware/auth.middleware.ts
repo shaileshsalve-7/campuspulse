@@ -12,8 +12,8 @@ export async function requireAuth(request: AuthenticatedRequest, _response: Resp
     const [scheme, token] = request.header('authorization')?.split(' ') ?? [];
     if (scheme !== 'Bearer' || !token) throw new ApiError(401, 'Authentication is required.', 'AUTHENTICATION_REQUIRED');
     const claims = verifyAccessToken(token);
-    const user = await User.findById(claims.sub).select('role isActive isEmailVerified');
-    if (!user || !user.isActive || !user.isEmailVerified) {
+    const user = await User.findById(claims.sub).select('role isActive');
+    if (!user || !user.isActive) {
       throw new ApiError(401, 'Your account is unavailable.', 'ACCOUNT_UNAVAILABLE');
     }
     request.auth = { userId: user._id.toString(), role: user.role };

@@ -24,7 +24,7 @@ export async function listAnnouncements(request: AuthenticatedRequest, response:
 export async function createAnnouncement(request: AuthenticatedRequest, response: Response): Promise<Response> {
   if (!publishers.has(request.auth!.role)) throw new ApiError(403, 'Only authorized faculty and administrators can publish announcements.', 'INSUFFICIENT_ROLE');
   const announcement = await Announcement.create({ ...request.body, authorId: request.auth!.userId });
-  const recipients = await User.find({ isActive: true, isEmailVerified: true }).select('_id').lean();
+  const recipients = await User.find({ isActive: true }).select('_id').lean();
   await Promise.all([recordAudit({ actorId: request.auth!.userId, action: 'ANNOUNCEMENT_CREATED', entityType: 'Announcement', entityId: announcement._id.toString() }), ...recipients.map((recipient) => notify({ recipientId: recipient._id, type: 'ANNOUNCEMENT', title: announcement.title, body: 'New official campus announcement', link: `/announcements/${announcement._id}` }))]);
   return sendSuccess(response, 201, 'Official announcement published.', { announcement });
 }

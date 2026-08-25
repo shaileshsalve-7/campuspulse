@@ -5,6 +5,7 @@ import type { User } from '../types';
 interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
+  register: (input: { firstName: string; lastName: string; email: string; password: string }) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
@@ -33,6 +34,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     isLoading,
     refreshSession,
+    register: async (input) => {
+      const session = await authApi.register(input);
+      setUser(session.user);
+    },
     login: async (email, password) => {
       const session = await authApi.login({ email, password });
       setUser(session.user);

@@ -19,7 +19,6 @@ async function seedAdmin(): Promise<void> {
         lastName: process.env.SEED_ADMIN_LAST_NAME?.trim() || 'Administrator',
         passwordHash: await hashPassword(password),
         role: 'SUPER_ADMIN',
-        isEmailVerified: true,
         isActive: true,
       },
       $setOnInsert: { email },

@@ -65,7 +65,7 @@ export async function rotateRefreshToken(token: string): Promise<{ userId: strin
 
   await RefreshToken.deleteOne({ _id: stored._id });
   const user = await (await import('../models/user.model.js')).User.findById(claims.sub).select('+passwordHash');
-  if (!user || !user.isActive || !user.isEmailVerified) throw new ApiError(401, 'Your account is unavailable.', 'ACCOUNT_UNAVAILABLE');
+  if (!user || !user.isActive) throw new ApiError(401, 'Your account is unavailable.', 'ACCOUNT_UNAVAILABLE');
   return { userId: user._id.toString(), role: user.role, tokens: await createAuthTokens(user) };
 }
 

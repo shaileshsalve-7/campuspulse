@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { env } from '../config/env.js';
-import { User, publicUser, type UserDocument } from '../models/user.model.js';
+import { User, publicUser } from '../models/user.model.js';
 import { createAuthTokens, hashPassword, revokeRefreshToken, rotateRefreshToken, verifyPassword } from '../services/auth.service.js';
 import { emailService } from '../services/email.service.js';
 import { ApiError } from '../utils/api-error.js';
@@ -8,7 +8,6 @@ import { sendSuccess } from '../utils/api-response.js';
 import { createOpaqueToken, hashValue } from '../utils/crypto.js';
 import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 
-const verificationLifetimeMs = 24 * 60 * 60 * 1000;
 const resetLifetimeMs = 60 * 60 * 1000;
 
 function setRefreshCookie(response: Response, refreshToken: string): void {
@@ -35,14 +34,6 @@ function developmentToken(token: string) {
   return env.NODE_ENV !== 'production' && env.MAIL_MODE === 'console' ? { developmentToken: token } : {};
 }
 
-async function sendVerificationEmail(user: UserDocument, token: string): Promise<void> {
-  await emailService.sendActionEmail({
-    recipient: user.email,
-    subject: 'Verify your CampusPulse account',
-    actionUrl: `${env.APP_URL}/verify-email?token=${token}`,
-  });
-}
-
 export async function register(request: Request, response: Response): Promise<Response> {
   const { firstName, lastName, email, password } = request.body;
   const normalizedEmail = email.toLowerCase();
@@ -50,47 +41,18 @@ export async function register(request: Request, response: Response): Promise<Re
   const existing = await User.findOne({ email: normalizedEmail });
   if (existing) throw new ApiError(409, 'An account with this email already exists.', 'EMAIL_IN_USE');
 
-  const verificationToken = createOpaqueToken();
   const user = await User.create({
     firstName,
     lastName,
     email: normalizedEmail,
     passwordHash: await hashPassword(password),
-    emailVerificationTokenHash: hashValue(verificationToken),
-    emailVerificationExpiresAt: new Date(Date.now() + verificationLifetimeMs),
   });
-  await sendVerificationEmail(user, verificationToken);
-  return sendSuccess(response, 201, 'Account created. Check your college email to verify it.', {
+  const tokens = await createAuthTokens(user);
+  setRefreshCookie(response, tokens.refreshToken);
+  return sendSuccess(response, 201, 'Account created. You are now signed in.', {
     user: publicUser(user),
-    ...developmentToken(verificationToken),
+    accessToken: tokens.accessToken,
   });
-}
-
-export async function verifyEmail(request: Request, response: Response): Promise<Response> {
-  const tokenHash = hashValue(request.body.token);
-  const user = await User.findOne({ emailVerificationTokenHash: tokenHash }).select('+emailVerificationTokenHash +emailVerificationExpiresAt');
-  if (!user || !user.emailVerificationExpiresAt || user.emailVerificationExpiresAt.getTime() < Date.now()) {
-    throw new ApiError(400, 'This verification link is invalid or expired.', 'INVALID_VERIFICATION_TOKEN');
-  }
-  user.isEmailVerified = true;
-  user.emailVerificationTokenHash = undefined;
-  user.emailVerificationExpiresAt = undefined;
-  await user.save();
-  return sendSuccess(response, 200, 'Email verified. You can now sign in.', { user: publicUser(user) });
-}
-
-export async function resendVerification(request: Request, response: Response): Promise<Response> {
-  const normalizedEmail = request.body.email.toLowerCase();
-  const user = await User.findOne({ email: normalizedEmail });
-  if (!user || user.isEmailVerified) {
-    return sendSuccess(response, 200, 'If an unverified account exists, a verification link has been sent.');
-  }
-  const verificationToken = createOpaqueToken();
-  user.emailVerificationTokenHash = hashValue(verificationToken);
-  user.emailVerificationExpiresAt = new Date(Date.now() + verificationLifetimeMs);
-  await user.save();
-  await sendVerificationEmail(user, verificationToken);
-  return sendSuccess(response, 200, 'A new verification link has been sent to your college email.', developmentToken(verificationToken));
 }
 
 export async function login(request: Request, response: Response): Promise<Response> {
@@ -100,7 +62,6 @@ export async function login(request: Request, response: Response): Promise<Respo
     throw new ApiError(401, 'Email or password is incorrect.', 'INVALID_CREDENTIALS');
   }
   if (!user.isActive) throw new ApiError(403, 'This account has been disabled.', 'ACCOUNT_DISABLED');
-  if (!user.isEmailVerified) throw new ApiError(403, 'Verify your college email before signing in.', 'EMAIL_NOT_VERIFIED');
 
   const tokens = await createAuthTokens(user);
   setRefreshCookie(response, tokens.refreshToken);
