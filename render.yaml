@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: campuspulse-api
+    name: campuspulse
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build --workspace=@campuspulse/api
+    buildCommand: npm install && npm run build
     startCommand: npm run start --workspace=@campuspulse/api
     healthCheckPath: /api/health
     envVars:

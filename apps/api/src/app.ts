@@ -3,6 +3,8 @@ import cors from 'cors';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
 import { env } from './config/env.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 import { mongoSanitize } from './middleware/mongo-sanitize.middleware.js';
@@ -41,5 +43,14 @@ app.use('/api/moderation', moderationRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/search', searchRouter);
 
-app.use(notFound);
+app.use('/api', notFound);
+
+if (env.NODE_ENV === 'production') {
+  const webDistPath = resolve(dirname(fileURLToPath(import.meta.url)), '../../web/dist');
+  app.use(express.static(webDistPath));
+  app.get(/.*/, (_request, response) => response.sendFile(resolve(webDistPath, 'index.html')));
+} else {
+  app.use(notFound);
+}
+
 app.use(errorHandler);

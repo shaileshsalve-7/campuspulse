@@ -156,8 +156,9 @@ npm run test
 
 ## Deployment
 
-- [vercel.json](vercel.json) configures the Vite frontend build. In Vercel set `VITE_API_BASE_URL` to your deployed API URL.
-- [render.yaml](render.yaml) defines the API service. Supply `MONGODB_URI`, `CLIENT_ORIGIN`, `APP_URL`, and SMTP settings through Render; do not commit them.
+- [render.yaml](render.yaml) defines one Render web service that builds the React frontend and API together. Its public URL serves the site and `/api` from the same origin.
+- [vercel.json](vercel.json) remains available if you prefer a separate Vercel frontend; set `VITE_API_BASE_URL` to the deployed API URL in that configuration.
+- In Render, supply `MONGODB_URI`, `CLIENT_ORIGIN`, `APP_URL`, and SMTP settings through protected environment variables; do not commit them.
 - Use MongoDB Atlas in production, enable HTTPS, use unique JWT secrets, set the exact frontend `CLIENT_ORIGIN`, and configure a verified SMTP sender.
 
 ## Provider extensions
