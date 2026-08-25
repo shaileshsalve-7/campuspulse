@@ -4,6 +4,10 @@
 
 The application includes issue management, anonymous feedback, events, clubs, official announcements, notifications, map data, global search, moderation, and administrator analytics.
 
+## Live website
+
+Open CampusPulse: [https://campuspulse-shaileshsalve.onrender.com](https://campuspulse-shaileshsalve.onrender.com)
+
 ## Features
 
 - React, TypeScript, Vite, Tailwind CSS, React Router, TanStack Query, React Hook Form, and Zod frontend foundation.
