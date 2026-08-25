@@ -99,6 +99,7 @@ See [.env.example](.env.example). Important values:
 | Variable | Purpose |
 | --- | --- |
 | `MONGODB_URI` | MongoDB or Atlas connection string |
+| `MONGODB_URI_TEMPLATE` + `MONGODB_PASSWORD` | Optional hosted alternative. Use `__PASSWORD__` once in the template; the API URL-encodes the protected password automatically. |
 | `JWT_ACCESS_SECRET` | Access-token signing secret (32+ characters) |
 | `JWT_REFRESH_SECRET` | Refresh-token signing secret (32+ characters) |
 | `CLIENT_ORIGIN` | Allowed browser origin |

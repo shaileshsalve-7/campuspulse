@@ -3,7 +3,7 @@ services:
     name: campuspulse
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm run start --workspace=@campuspulse/api
     healthCheckPath: /api/health
     envVars:
@@ -12,6 +12,10 @@ services:
       - key: PORT
         value: "4000"
       - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_URI_TEMPLATE
+        sync: false
+      - key: MONGODB_PASSWORD
         sync: false
       - key: CLIENT_ORIGIN
         sync: false
