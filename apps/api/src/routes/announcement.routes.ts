@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import * as controller from '../controllers/announcement.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { createAnnouncementSchema, updateAnnouncementSchema } from '../validators/campus.validator.js';
+export const announcementRouter = Router();
+announcementRouter.use(requireAuth);
+announcementRouter.get('/', asyncHandler(controller.listAnnouncements));
+announcementRouter.post('/', validate(createAnnouncementSchema), asyncHandler(controller.createAnnouncement));
+announcementRouter.patch('/:id', validate(updateAnnouncementSchema), asyncHandler(controller.updateAnnouncement));

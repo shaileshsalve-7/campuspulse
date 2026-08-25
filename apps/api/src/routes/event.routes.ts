@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import * as controller from '../controllers/event.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { createEventSchema, eventListSchema, updateEventSchema } from '../validators/campus.validator.js';
+export const eventRouter = Router();
+eventRouter.use(requireAuth);
+eventRouter.get('/', validate(eventListSchema), asyncHandler(controller.listEvents));
+eventRouter.post('/', validate(createEventSchema), asyncHandler(controller.createEvent));
+eventRouter.get('/:id', asyncHandler(controller.getEvent));
+eventRouter.patch('/:id', validate(updateEventSchema), asyncHandler(controller.updateEvent));
+eventRouter.post('/:id/register', asyncHandler(controller.registerForEvent));
+eventRouter.delete('/:id/register', asyncHandler(controller.cancelEventRegistration));

@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import * as controller from '../controllers/admin.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { userUpdateSchema } from '../validators/campus.validator.js';
+export const adminRouter = Router();
+adminRouter.use(requireAuth);
+adminRouter.get('/analytics', asyncHandler(controller.analytics));
+adminRouter.get('/users', asyncHandler(controller.manageUsers));
+adminRouter.patch('/users/:id', validate(userUpdateSchema), asyncHandler(controller.updateUser));

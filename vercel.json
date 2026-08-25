@@ -1,0 +1,5 @@
+{
+  "framework": "vite",
+  "buildCommand": "npm install && npm run build --workspace=@campuspulse/web",
+  "outputDirectory": "apps/web/dist"
+}

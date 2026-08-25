@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import * as controller from '../controllers/moderation.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { reportReviewSchema, reportSchema } from '../validators/campus.validator.js';
+export const moderationRouter = Router();
+moderationRouter.use(requireAuth);
+moderationRouter.post('/reports', validate(reportSchema), asyncHandler(controller.createReport));
+moderationRouter.get('/reports', asyncHandler(controller.listReports));
+moderationRouter.patch('/reports/:id', validate(reportReviewSchema), asyncHandler(controller.reviewReport));

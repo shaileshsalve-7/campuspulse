@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: campuspulse-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build --workspace=@campuspulse/api
+    startCommand: npm run start --workspace=@campuspulse/api
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4000"
+      - key: MONGODB_URI
+        sync: false
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: MAIL_MODE
+        value: console

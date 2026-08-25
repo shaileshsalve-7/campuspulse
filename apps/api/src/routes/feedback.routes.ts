@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import * as controller from '../controllers/feedback.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { feedbackResponseSchema, feedbackSchema } from '../validators/campus.validator.js';
+export const feedbackRouter = Router();
+feedbackRouter.use(requireAuth);
+feedbackRouter.get('/', asyncHandler(controller.listFeedback));
+feedbackRouter.post('/', validate(feedbackSchema), asyncHandler(controller.createFeedback));
+feedbackRouter.patch('/:id/response', validate(feedbackResponseSchema), asyncHandler(controller.respondToFeedback));

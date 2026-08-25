@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import * as controller from '../controllers/club.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { createClubSchema, updateClubSchema } from '../validators/campus.validator.js';
+export const clubRouter = Router();
+clubRouter.use(requireAuth);
+clubRouter.get('/', asyncHandler(controller.listClubs));
+clubRouter.post('/', validate(createClubSchema), asyncHandler(controller.createClub));
+clubRouter.get('/:id', asyncHandler(controller.getClub));
+clubRouter.patch('/:id', validate(updateClubSchema), asyncHandler(controller.updateClub));
+clubRouter.post('/:id/follow', asyncHandler(controller.followClub));
+clubRouter.delete('/:id/follow', asyncHandler(controller.unfollowClub));

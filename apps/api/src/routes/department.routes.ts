@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import * as controller from '../controllers/department.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { departmentSchema } from '../validators/campus.validator.js';
+export const departmentRouter = Router();
+departmentRouter.use(requireAuth);
+departmentRouter.get('/', asyncHandler(controller.listDepartments));
+departmentRouter.get('/performance', asyncHandler(controller.departmentPerformance));
+departmentRouter.post('/', validate(departmentSchema), asyncHandler(controller.createDepartment));
